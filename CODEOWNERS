@@ -1,0 +1,19 @@
+# Codeowners file. See also https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-code-owners
+
+# By default, Jeremy is Codeowner for everything
+*       @JeremyTheocharis
+
+
+# Ferdinand is responsible for the Go code
+/golang/ @Scarjit
+
+# Remaining files are owned by Jeremy
+AUTHORS @JeremyTheocharis
+CODEOWNERS @JeremyTheocharis
+CODE_OF_CONDUCT.md @JeremyTheocharis
+CONTRIBUTING.md @JeremyTheocharis
+CONTRIBUTOR_LICENSE_AGREEMENT_ENTITY.md @JeremyTheocharis
+CONTRIBUTOR_LICENSE_AGREEMENT_INDIVIDUAL.md @JeremyTheocharis
+LICENSE @JeremyTheocharis
+README.md @JeremyTheocharis
+SECURITY.md @JeremyTheocharis
