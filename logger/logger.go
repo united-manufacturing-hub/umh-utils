@@ -7,7 +7,10 @@ import (
 	"os"
 )
 
-func New(logLevel string) *zap.SugaredLogger {
+// New creates a new logger with the given log level.
+// envKey is the name of the environment variable that contains the log level.
+func New(envKey string) *zap.SugaredLogger {
+	var logLevel = os.Getenv(envKey)
 	encoderConfig := ecszap.NewDefaultEncoderConfig()
 	var core zapcore.Core
 	switch logLevel {
@@ -18,11 +21,5 @@ func New(logLevel string) *zap.SugaredLogger {
 	}
 	logger := zap.New(core, zap.AddCaller())
 	zap.ReplaceGlobals(logger)
-	defer func(logger *zap.Logger) {
-		err := logger.Sync()
-		if err != nil {
-			panic(err)
-		}
-	}(logger)
 	return logger.Sugar()
 }
