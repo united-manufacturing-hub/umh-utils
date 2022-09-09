@@ -1,4 +1,4 @@
-module umh-utils
+module github.com/united-manufacturing-hub/umh-utils
 
 go 1.19
 

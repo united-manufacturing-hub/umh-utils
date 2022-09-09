@@ -1,6 +1,7 @@
 # UMH Go utilities
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Go Report Card](https://goreportcard.com/badge/github.com/united-manufacturing-hub/umh-lib)](https://goreportcard.com/report/github.com/united-manufacturing-hub/umh-utils)
 
 This library is a collection of go modules to provide shared functionality for the UMH Go projects
 
