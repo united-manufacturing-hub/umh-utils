@@ -18,11 +18,5 @@ func New(logLevel string) *zap.SugaredLogger {
 	}
 	logger := zap.New(core, zap.AddCaller())
 	zap.ReplaceGlobals(logger)
-	defer func(logger *zap.Logger) {
-		err := logger.Sync()
-		if err != nil {
-			panic(err)
-		}
-	}(logger)
 	return logger.Sugar()
 }
