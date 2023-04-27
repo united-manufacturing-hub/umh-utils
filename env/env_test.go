@@ -217,6 +217,80 @@ func TestGetAsInt(t *testing.T) {
 	}
 }
 
+// TestGetAsUint64 tests the GetAsUint64 function
+func TestGetAsUint64(t *testing.T) {
+	expected := uint64(123)
+	fallback := uint64(456)
+	setupEnv(strconv.FormatUint(expected, 10))
+	defer teardownEnv()
+
+	type args struct {
+		key      string
+		required bool
+		fallback uint64
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    uint64
+		wantErr bool
+	}{
+		{
+			name: "Case 1: Variable exists, return value",
+			args: args{
+				key:      "EXISTING_VAR",
+				required: false,
+				fallback: fallback,
+			},
+			want:    expected,
+			wantErr: false,
+		},
+		{
+			name: "Case 2: Variable is empty, return error",
+			args: args{
+				key:      "EMPTY_VAR",
+				required: false,
+				fallback: fallback,
+			},
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name: "Case 3: Variable does not exist and is not required, return fallback value",
+			args: args{
+				key:      "NONEXISTENT_VAR",
+				required: false,
+				fallback: fallback,
+			},
+			want:    fallback,
+			wantErr: false,
+		},
+		{
+			name: "Case 4: Variable does not exist and is required, return error",
+			args: args{
+				key:      "NONEXISTENT_VAR",
+				required: true,
+				fallback: fallback,
+			},
+			want:    0,
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := GetAsUint64(tt.args.key, tt.args.required, tt.args.fallback)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetAsUint64() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("GetAsUint64() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 // TestGetAsBool tests the GetAsBool function
 func TestGetAsBool(t *testing.T) {
 	setupEnv(strconv.FormatBool(true))

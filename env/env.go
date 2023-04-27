@@ -62,6 +62,28 @@ func GetAsInt(key string, required bool, fallback int) (int, error) {
 	return i, nil
 }
 
+// GetAsUint64 returns the value of the environment variable as an uint64. If the environment variable is not set and not required, the fallback value is returned.
+func GetAsUint64(key string, required bool, fallback uint64) (uint64, error) {
+	value, set := os.LookupEnv(key)
+
+	// Check if the environment variable is set
+	if !set {
+		// If not required, return the fallback value
+		if !required {
+			return fallback, nil
+		}
+		// If required, return an error
+		return 0, fmt.Errorf("environment variable %s is required but not set", key)
+	}
+
+	i, err := strconv.ParseUint(value, 10, 64)
+	if err != nil {
+		return 0, fmt.Errorf("environment variable %s is not an integer", key)
+	}
+
+	return i, nil
+}
+
 // GetAsBool returns the value of the environment variable as a bool. If the environment variable is not set and not required, the fallback value is returned.
 func GetAsBool(key string, required bool, fallback bool) (bool, error) {
 	value, set := os.LookupEnv(key)
