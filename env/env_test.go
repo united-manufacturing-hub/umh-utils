@@ -43,13 +43,17 @@ func teardown() {
 	fmt.Println("Unset EMPTY_VAR")
 }
 
-func setupEnv(value string) {
-	err := os.Setenv("EXISTING_VAR", value)
+func setupEnv(correctValue, wrongValue string) {
+	err := os.Setenv("EXISTING_VAR", correctValue)
+	if err != nil {
+		panic(err)
+	}
+	err = os.Setenv("WRONG_VAR", wrongValue)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("Set EXISTING_VAR to %v\n", value)
+	fmt.Printf("Set EXISTING_VAR to %v\n", correctValue)
 }
 
 func teardownEnv() {
@@ -72,8 +76,9 @@ func TestMain(m *testing.M) {
 // TestGetAsString tests the GetAsString function
 func TestGetAsString(t *testing.T) {
 	expected := "my-value"
+	wrong := 123
 	fallback := "fallback-value"
-	setupEnv(expected)
+	setupEnv(expected, strconv.Itoa(wrong))
 	defer teardownEnv()
 
 	type args struct {
@@ -146,8 +151,9 @@ func TestGetAsString(t *testing.T) {
 // TestGetAsInt tests the GetAsInt function
 func TestGetAsInt(t *testing.T) {
 	expected := 123
+	wrong := "wrong"
 	fallback := 456
-	setupEnv(strconv.Itoa(expected))
+	setupEnv(strconv.Itoa(expected), wrong)
 	defer teardownEnv()
 
 	type args struct {
@@ -178,7 +184,7 @@ func TestGetAsInt(t *testing.T) {
 				required: false,
 				fallback: fallback,
 			},
-			want:    0,
+			want:    fallback,
 			wantErr: true,
 		},
 		{
@@ -201,6 +207,16 @@ func TestGetAsInt(t *testing.T) {
 			want:    0,
 			wantErr: true,
 		},
+		{
+			name: "Case 5: Variable is not an integer, return fallback value and error",
+			args: args{
+				key:      "WRONG_VAR",
+				required: false,
+				fallback: fallback,
+			},
+			want:    fallback,
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -220,8 +236,9 @@ func TestGetAsInt(t *testing.T) {
 // TestGetAsUint64 tests the GetAsUint64 function
 func TestGetAsUint64(t *testing.T) {
 	expected := uint64(123)
+	wrong := "wrong"
 	fallback := uint64(456)
-	setupEnv(strconv.FormatUint(expected, 10))
+	setupEnv(strconv.FormatUint(expected, 10), wrong)
 	defer teardownEnv()
 
 	type args struct {
@@ -252,7 +269,7 @@ func TestGetAsUint64(t *testing.T) {
 				required: false,
 				fallback: fallback,
 			},
-			want:    0,
+			want:    fallback,
 			wantErr: true,
 		},
 		{
@@ -275,6 +292,16 @@ func TestGetAsUint64(t *testing.T) {
 			want:    0,
 			wantErr: true,
 		},
+		{
+			name: "Case 5: Variable is not an integer, return fallback value and error",
+			args: args{
+				key:      "WRONG_VAR",
+				required: false,
+				fallback: fallback,
+			},
+			want:    fallback,
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -294,8 +321,9 @@ func TestGetAsUint64(t *testing.T) {
 // TestGetAsFloat64 tests the GetAsFloat64 function
 func TestGetAsFloat64(t *testing.T) {
 	expected := 123.456
+	wrong := "wrong"
 	fallback := 456.789
-	setupEnv(strconv.FormatFloat(expected, 'f', -1, 64))
+	setupEnv(strconv.FormatFloat(expected, 'f', -1, 64), wrong)
 	defer teardownEnv()
 
 	type args struct {
@@ -326,7 +354,7 @@ func TestGetAsFloat64(t *testing.T) {
 				required: false,
 				fallback: fallback,
 			},
-			want:    0,
+			want:    fallback,
 			wantErr: true,
 		},
 		{
@@ -349,6 +377,16 @@ func TestGetAsFloat64(t *testing.T) {
 			want:    0,
 			wantErr: true,
 		},
+		{
+			name: "Case 5: Variable is not a float, return fallback value and error",
+			args: args{
+				key:      "WRONG_VAR",
+				required: false,
+				fallback: fallback,
+			},
+			want:    fallback,
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -367,7 +405,7 @@ func TestGetAsFloat64(t *testing.T) {
 
 // TestGetAsBool tests the GetAsBool function
 func TestGetAsBool(t *testing.T) {
-	setupEnv(strconv.FormatBool(true))
+	setupEnv(strconv.FormatBool(true), "wrong")
 	defer teardownEnv()
 
 	type args struct {
@@ -421,6 +459,16 @@ func TestGetAsBool(t *testing.T) {
 			want:    false,
 			wantErr: true,
 		},
+		{
+			name: "Case 5: Variable is not a bool, return fallback value and error",
+			args: args{
+				key:      "WRONG_VAR",
+				required: false,
+				fallback: false,
+			},
+			want:    false,
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -449,6 +497,11 @@ func TestGetAsType(t *testing.T) {
 		IntValue:    123,
 		StringValue: "test",
 	}
+	wrong := struct {
+		WrongValue float64 `json:"wrongValue"`
+	}{
+		WrongValue: 1.23,
+	}
 	fallback := testStruct{
 		BoolValue:   false,
 		IntValue:    456,
@@ -458,7 +511,11 @@ func TestGetAsType(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error marshalling testStruct: %v", err)
 	}
-	setupEnv(string(strEnv))
+	strWrong, err := json.Marshal(wrong)
+	if err != nil {
+		t.Errorf("Error marshalling wrong: %v", err)
+	}
+	setupEnv(string(strEnv), string(strWrong))
 	defer teardownEnv()
 
 	type args struct {
@@ -489,7 +546,7 @@ func TestGetAsType(t *testing.T) {
 				required: false,
 				fallback: fallback,
 			},
-			want:    testStruct{},
+			want:    fallback,
 			wantErr: true,
 		},
 		{

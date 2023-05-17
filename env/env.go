@@ -56,7 +56,7 @@ func GetAsInt(key string, required bool, fallback int) (int, error) {
 
 	i, err := strconv.Atoi(value)
 	if err != nil {
-		return 0, fmt.Errorf("environment variable %s is not an integer", key)
+		return fallback, fmt.Errorf("environment variable %s is not an integer. using fallback value", key)
 	}
 
 	return i, nil
@@ -78,7 +78,7 @@ func GetAsUint64(key string, required bool, fallback uint64) (uint64, error) {
 
 	i, err := strconv.ParseUint(value, 10, 64)
 	if err != nil {
-		return 0, fmt.Errorf("environment variable %s is not an integer", key)
+		return fallback, fmt.Errorf("environment variable %s is not an integer. using fallback value", key)
 	}
 
 	return i, nil
@@ -100,7 +100,7 @@ func GetAsFloat64(key string, required bool, fallback float64) (float64, error) 
 
 	f, err := strconv.ParseFloat(value, 64)
 	if err != nil {
-		return 0, fmt.Errorf("environment variable %s is not a float", key)
+		return fallback, fmt.Errorf("environment variable %s is not a float. using fallback value", key)
 	}
 
 	return f, nil
@@ -122,7 +122,7 @@ func GetAsBool(key string, required bool, fallback bool) (bool, error) {
 
 	b, err := strconv.ParseBool(value)
 	if err != nil {
-		return false, fmt.Errorf("environment variable %s is not a boolean", key)
+		return fallback, fmt.Errorf("environment variable %s is not a boolean. using fallback value", key)
 	}
 
 	return b, nil
@@ -164,6 +164,8 @@ func GetAsType[T any](key string, unmarshalTo *T, required bool, fallback T) err
 	err := json.Unmarshal([]byte(value), &unmarshalTo)
 	if err != nil {
 		// If unmarshaling fails, return an error message
+		var ptr *T = &fallback
+		*unmarshalTo = *ptr
 		return fmt.Errorf("failed to unmarshal environment variable %s: %s", key, err)
 	}
 
