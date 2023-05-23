@@ -13,6 +13,7 @@
 # limitations under the License.
 
 output:
+  format: "colored-line-number,github-actions"
   # Sort results by: filepath, line and column.
   sort-results: true
 
@@ -43,6 +44,7 @@ linters-settings:
       - crypto/x509
       - database/sql
       - encoding/binary
+      - encoding/json
       - encoding/gob
       - encoding/xml
       - errors
@@ -71,9 +73,11 @@ linters-settings:
       - github.com/rung/go-safecast
       - github.com/united-manufacturing-hub/**/*
       - github.com/zeebo/xxh3
+      - go.elastic.co/ecszap
       - go.uber.org/zap
       - golang.org/**/*
       - gonum.org/v1/gonum/stat
+      - gopkg.in/inf.v0
       - gorm.io/gorm
       - hash/crc32
       - io
