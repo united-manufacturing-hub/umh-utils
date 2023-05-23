@@ -151,6 +151,7 @@ func TestGetAsString(t *testing.T) {
 // TestGetAsInt tests the GetAsInt function
 func TestGetAsInt(t *testing.T) {
 	expected := 123
+	//nolint:goconst
 	wrong := "wrong"
 	fallback := 456
 	setupEnv(strconv.Itoa(expected), wrong)
