@@ -166,7 +166,7 @@ func GetAsType[T any](key string, unmarshalTo *T, required bool, fallback T) err
 		// If unmarshaling fails, return an error message
 		var ptr *T = &fallback
 		*unmarshalTo = *ptr
-		return fmt.Errorf("failed to unmarshal environment variable %s: %s", key, err)
+		return fmt.Errorf("failed to unmarshal environment variable %s: %w", key, err)
 	}
 
 	return nil
