@@ -83,13 +83,13 @@ func TestGetAsString(t *testing.T) {
 
 	type args struct {
 		key      string
-		required bool
 		fallback string
+		required bool
 	}
 	tests := []struct {
 		name    string
-		args    args
 		want    string
+		args    args
 		wantErr bool
 	}{
 		{
@@ -488,9 +488,9 @@ func TestGetAsBool(t *testing.T) {
 // TestGetAsType tests the GetAsType function
 func TestGetAsType(t *testing.T) {
 	type testStruct struct {
-		BoolValue   bool   `json:"boolValue"`
-		IntValue    int    `json:"intValue"`
 		StringValue string `json:"stringValue"`
+		IntValue    int    `json:"intValue"`
+		BoolValue   bool   `json:"boolValue"`
 	}
 	expected := testStruct{
 		BoolValue:   true,
@@ -520,13 +520,13 @@ func TestGetAsType(t *testing.T) {
 
 	type args struct {
 		key      string
-		required bool
 		fallback testStruct
+		required bool
 	}
 	tests := []struct {
 		name    string
-		args    args
 		want    testStruct
+		args    args
 		wantErr bool
 	}{
 		{
