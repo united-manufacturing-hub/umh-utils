@@ -137,7 +137,7 @@ func Quantity(str string) (int, error) {
 	}
 
 	amount := new(inf.Dec)
-	if _, ok := amount.SetString(value); !ok {
+	if _, ok = amount.SetString(value); !ok {
 		return 0, ErrNumeric
 	}
 
@@ -161,15 +161,13 @@ func Quantity(str string) (int, error) {
 	// if you want some resources, you should get some resources, even if you asked for way too small
 	// of an amount.  Arguably, this should be inf.RoundHalfUp (normal rounding), but that would have
 	// the side effect of rounding values < .5n to zero.
-	if v, ok := amount.Unscaled(); v != int64(0) || !ok {
+	var v int64
+	if v, ok = amount.Unscaled(); v != int64(0) || !ok {
 		amount.Round(amount, inf.Scale(-Nano), inf.RoundUp)
 	}
 
-	final, ok := amount.Unscaled()
-	if !ok {
-		return 0, ErrNumeric
-	}
-	return AsInt(int(final), Scale(amount.Scale()))
+	v = amount.UnscaledBig().Int64()
+	return AsInt(int(v), Scale(amount.Scale()))
 }
 
 // parseQuantityString is a fast scanner for quantity values.
