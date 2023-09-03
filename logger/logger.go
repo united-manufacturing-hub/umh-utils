@@ -17,10 +17,13 @@ limitations under the License.
 */
 
 import (
+	"errors"
+	"os"
+	"syscall"
+
 	"go.elastic.co/ecszap"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
 )
 
 func New(logLevel string) *zap.SugaredLogger {
@@ -35,4 +38,15 @@ func New(logLevel string) *zap.SugaredLogger {
 	logger := zap.New(core, zap.AddCaller())
 	zap.ReplaceGlobals(logger)
 	return logger.Sugar()
+}
+
+// Wrapper around zap.SugaredLogger.Sync() that ignores EINVAL errors.
+//
+// See: https://github.com/uber-go/zap/issues/1093#issuecomment-1120667285
+func Sync(logger *zap.SugaredLogger) error {
+	err := logger.Sync()
+	if !errors.Is(err, syscall.EINVAL) {
+		return err
+	}
+	return nil
 }
